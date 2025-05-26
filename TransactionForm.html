@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+        /* CSS for Transaction Form */
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        .block {
+            display: block;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .rounded-md {
+            border-radius: 0.375rem;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .bg-green-500 {
+            background-color: #16a34a;
+        }
+
+        .text-white {
+            color: #fff;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .hover\:bg-gray-300:hover {
+            background-color: #d1d5db;
+        }
+
+        .transition-colors {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-duration: 0.15s;
+            transition-timing-function: ease;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .inset-y-0 {
+            top: 0;
+            bottom: 0;
+        }
+
+        .left-0 {
+            left: 0;
+        }
+
+        .pl-3 {
+            padding-left: 0.75rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .sm\:text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .pl-7 {
+            padding-left: 1.75rem;
+        }
+
+        .pr-12 {
+            padding-right: 3rem;
+        }
+
+        .border-red-300 {
+            border-color: #f87171;
+        }
+
+        .focus\:ring-red-500:focus {
+            --tw-ring-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
+        }
+
+        .focus\:border-red-500:focus {
+            border-color: #ef4444;
+        }
+
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+
+        .focus\:ring-blue-500:focus {
+            --tw-ring-color: #3b82f6;
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+
+        .focus\:border-blue-500:focus {
+            border-color: #3b82f6;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .text-red-600 {
+            color: #dc2626;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .justify-end {
+            justify-content: flex-end;
+        }
+
+        .space-x-3 > * + * {
+            margin-left: 0.75rem;
+        }
+
+        .pt-2 {
+            padding-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="container mx-auto p-4 flex justify-center items-center">
+        <div id="form-container" class="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+        </div>
+    </div>
+    <script>
+    const incomeCategories = [
+        'salary',
+        'investment',
+        'side-hustle',
+        'gift',
+        'other',
+    ];
+
+    const expenseCategories = [
+        'food',
+        'transportation',
+        'housing',
+        'utilities',
+        'entertainment',
+        'health',
+        'education',
+        'shopping',
+        'debt',
+        'savings',
+        'other',
+    ];
+
+    function TransactionForm(props) {
+        const [type, setType] = useState(props.initialValues?.type || 'expense');
+        const [amount, setAmount] = useState(props.initialValues?.amount?.toString() || '');
+        const [description, setDescription] = useState(props.initialValues?.description || '');
+        const [category, setCategory] = useState(props.initialValues?.category || 'other');
+        const [date, setDate] = useState(props.initialValues?.date?.split('T')[0] || new Date().toISOString().split('T')[0]);
+        const [errors, setErrors] = useState({});
+
+        const categories = type === 'income' ? incomeCategories : expenseCategories;
+
+        const validateForm = () => {
+            const newErrors = {};
+
+            if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+                newErrors.amount = 'Please enter a valid amount greater than 0';
+            }
+
+            if (!description.trim()) {
+                newErrors.description = 'Please enter a description';
+            }
+
+            if (!category) {
+                newErrors.category = 'Please select a category';
+            }
+
+            if (!date) {
+                newErrors.date = 'Please select a date';
+            }
+
+            setErrors(newErrors);
+            return Object.keys(newErrors).length === 0;
+        };
+
+        const handleSubmit = (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            props.onAddTransaction({
+                amount: Number(amount),
+                description,
+                category,
+                type,
+                date: new Date(date).toISOString(),
+            });
+
+            // Reset form if not editing
+            if (!props.isEdit) {
+                setAmount('');
+                setDescription('');
+                setCategory(type === 'income' ? 'salary' : 'food');
+                setDate(new Date().toISOString().split('T')[0]);
+            }
+        };
+
+        const handleTypeChange = (newType) => {
+            setType(newType);
+            // Reset category when type changes
+            setCategory(newType === 'income' ? 'salary' : 'food');
+        };
+
+        // Create form elements
+        const form = document.createElement('form');
+        form.className = 'space-y-4';
+        form.addEventListener('submit', handleSubmit);
+
+        // Type selection
+        const typeDiv = document.createElement('div');
+        typeDiv.className = 'flex space-x-4';
+
+        const typeLabel = document.createElement('label');
+        typeLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+        typeLabel.textContent = 'Type';
+
+        const typeButtonIncome = document.createElement('button');
+        typeButtonIncome.type = 'button';
+        typeButtonIncome.className = `flex-1 py-2 px-4 text-sm font-medium ${type === 'income'
+            ? 'bg-green-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition-colors duration-200`;
+        typeButtonIncome.textContent = 'Income';
+        typeButtonIncome.addEventListener('click', () => handleTypeChange('income'));
+
+        const typeButtonExpense = document.createElement('button');
+        typeButtonExpense.type = 'button';
+        typeButtonExpense.className = `flex-1 py-2 px-4 text-sm font-medium ${type === 'expense'
+            ? 'bg-red-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition-colors duration-200`;
+        typeButtonExpense.textContent = 'Expense';
+        typeButtonExpense.addEventListener('click', () => handleTypeChange('expense'));
+
+        typeDiv.appendChild(typeLabel);
+        typeDiv.appendChild(typeButtonIncome);
+        typeDiv.appendChild(typeButtonExpense);
+        form.appendChild(typeDiv);
+
+        // Amount input
+        const amountDiv = document.createElement('div');
+        const amountLabel = document.createElement('label');
+        amountLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+        amountLabel.textContent = 'Amount';
+
+        const amountInputContainer = document.createElement('div');
+        amountInputContainer.className = 'relative';
+
+        const currencySymbol = document.createElement('div');
+        currencySymbol.className = 'absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none';
+        currencySymbol.innerHTML = '<span class="text-gray-500 sm:text-sm">₹</span>';
+
+        const amountInput = document.createElement('input');
+        amountInput.type = 'number';
+        amountInput.id = 'amount';
+        amountInput.value = amount;
+        amountInput.addEventListener('change', (e) => setAmount(e.target.value));
+        amountInput.className = `block w-full pl-7 pr-12 py-2 sm:text-sm rounded-md ${errors.amount
+            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'}`;
+        amountInput.placeholder = '0';
+        amountInput.step = '1';
+        amountInput.min = '0';
+
+        amountInputContainer.appendChild(currencySymbol);
+        amountInputContainer.appendChild(amountInput);
+
+        const amountError = document.createElement('p');
+        amountError.className = 'mt-1 text-sm text-red-600';
+        amountError.textContent = errors.amount || '';
+
+        amountDiv.appendChild(amountLabel);
+        amountDiv.appendChild(amountInputContainer);
+        amountDiv.appendChild(amountError);
+        form.appendChild(amountDiv);
+
+        // Description input
+        const descriptionDiv = document.createElement('div');
+        const descriptionLabel = document.createElement('label');
+        descriptionLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+        descriptionLabel.textContent = 'Description';
+        const descriptionInput = document.createElement('input');
+        descriptionInput.type = 'text';
+        descriptionInput.id = 'description';
+        descriptionInput.value = description;
+        descriptionInput.addEventListener('change', (e) => setDescription(e.target.value));
+        descriptionInput.className = `block w-full py-2 px-3 sm:text-sm rounded-md ${errors.description
+            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'}`;
+        descriptionInput.placeholder = 'Enter description';
+        const descriptionError = document.createElement('p');
+        descriptionError.className = 'mt-1 text-sm text-red-600';
+        descriptionError.textContent = errors.description || '';
+        descriptionDiv.appendChild(descriptionLabel);
+        descriptionDiv.appendChild(descriptionInput);
+        descriptionDiv.appendChild(descriptionError);
+        form.appendChild(descriptionDiv);
+
+        // Category and Date
+        const categoryDateDiv = document.createElement('div');
+        categoryDateDiv.className = 'flex space-x-4';
+
+        // Category select
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'flex-1';
+        const categoryLabel = document.createElement('label');
+        categoryLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+        categoryLabel.textContent = 'Category';
+        const categorySelect = document.createElement('select');
+        categorySelect.id = 'category';
+        categorySelect.value = category;
+        categorySelect.addEventListener('change', (e) => setCategory(e.target.value));
+        categorySelect.className = `block w-full py-2 px-3 sm:text-sm rounded-md ${errors.category
+            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'}`;
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ');
+            categorySelect.appendChild(option);
+        });
+        const categoryError = document.createElement('p');
+        categoryError.className = 'mt-1 text-sm text-red-600';
+        categoryError.textContent = errors.category || '';
+        categoryDiv.appendChild(categoryLabel);
+        categoryDiv.appendChild(categorySelect);
+        categoryDiv.appendChild(categoryError);
+
+        // Date input
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'flex-1';
+        const dateLabel = document.createElement('label');
+        dateLabel.className = 'block text-sm font-medium text-gray-700 mb-1';
+        dateLabel.textContent = 'Date';
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.id = 'date';
+        dateInput.value = date;
+        dateInput.addEventListener('change', (e) => setDate(e.target.value));
+        dateInput.className = `block w-full py-2 px-3 sm:text-sm rounded-md ${errors.date
+            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'}`;
+        const dateError = document.createElement('p');
+        dateError.className = 'mt-1 text-sm text-red-600';
+        dateError.textContent = errors.date || '';
+        dateDiv.appendChild(dateLabel);
+        dateDiv.appendChild(dateInput);
+        dateDiv.appendChild(dateError);
+
+        categoryDateDiv.appendChild(categoryDiv);
+        categoryDateDiv.appendChild(dateDiv);
+        form.appendChild(categoryDateDiv);
+
+        // Submit buttons
+        const buttonDiv = document.createElement('div');
+        buttonDiv.className = 'flex justify-end space-x-3 pt-2';
+
+        if (props.onCancel) {
+            const cancelButton = document.createElement('button');
+            cancelButton.type = 'button';
+            cancelButton.onclick = props.onCancel;
+            cancelButton.className = 'px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
+            cancelButton.textContent = 'Cancel';
+            buttonDiv.appendChild(cancelButton);
+        }
+
+        const submitButton = document.createElement('button');
+        submitButton.type = 'submit';
+        submitButton.className = 'px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
+        submitButton.textContent = props.isEdit ? 'Update' : 'Add' + ' Transaction';
+        buttonDiv.appendChild(submitButton);
+
+        form.appendChild(buttonDiv);
+
+        return form;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const formContainer = document.getElementById('form-container');
+
+        // Example usage:
+        function handleAddTransaction(transaction) {
+            console.log('Transaction submitted:', transaction);
+            // In a real application, you would send this data to a server
+        }
+
+        const form = TransactionForm({
+            onAddTransaction: handleAddTransaction,
+            isEdit: false,
+            initialValues: {}
+        });
+        formContainer.appendChild(form);
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Filter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS for Transaction Filter */
+        .relative {
+            position: relative;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;  /* 24px */
+        }
+
+        .filter-button {
+            padding: 0.5rem 1rem;      /* 8px 16px */
+            background-color: #fff;
+            border: 1px solid #d1d5db;  /* border-gray-300 */
+            border-radius: 0.375rem;  /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);  /* shadow-sm */
+            font-size: 0.875rem;    /* text-sm */
+            font-medium: 500;          /* font-medium */
+            color: #374151;          /* text-gray-700 */
+            cursor: pointer;
+            transition-property: background-color, border-color, box-shadow;
+            transition-duration: 0.2s;
+            transition-timing-function: ease;
+            display: flex;
+            align-items: center;
+            outline: none;
+        }
+
+        .filter-button:hover {
+            background-color: #f9fafb;  /* hover:bg-gray-50 */
+        }
+
+        .filter-button:focus {
+            ring-width: 2px;
+            ring-color: #3b82f6;      /* focus:ring-blue-500 */
+            ring-offset-width: 2px;    /* focus:ring-offset-2 */
+            border-color: transparent;
+        }
+
+        .filter-icon {
+            height: 1.25rem;      /* h-5 */
+            width: 1.25rem;       /* w-5 */
+            margin-right: 0.5rem;  /* mr-2 */
+            color: #6b7280;      /* text-gray-400 */
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .active-indicator {
+            margin-left: 0.5rem;  /* ml-2 */
+            padding: 0.125rem 0.5rem;  /* px-2.5 py-0.5 */
+            border-radius: 1rem;    /* rounded-full */
+            font-size: 0.75rem;    /* text-xs */
+            font-medium: 500;      /* font-medium */
+            background-color: #eff6ff;  /* bg-blue-100 */
+            color: #1e40af;      /* text-blue-800 */
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            z-index: 10;
+            margin-top: 0.5rem;    /* mt-2 */
+            width: 100%;
+            background-color: #fff;
+            border-radius: 0.375rem;  /* rounded-md */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);  /* shadow-lg */
+            padding: 1rem;          /* p-4 */
+            border: 1px solid #e5e7eb;  /* border-gray-200 */
+        }
+
+        @media (min-width: 768px) {
+            .filter-dropdown {
+                width: 24rem;    /* md:w-96 */
+            }
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;          /* gap-4 */
+        }
+
+        @media (min-width: 640px) {
+            .filter-grid {
+                grid-template-columns: repeat(2, 1fr);  /* sm:grid-cols-2 */
+            }
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;    /* text-sm */
+            font-medium: 500;      /* font-medium */
+            color: #374151;          /* text-gray-700 */
+            margin-bottom: 0.25rem;  /* mb-1 */
+        }
+
+        .form-input, .form-select {
+            display: block;
+            width: 100%;
+            border: 1px solid #d1d5db;  /* border-gray-300 */
+            border-radius: 0.375rem;  /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);  /* shadow-sm */
+            font-size: 0.875rem;    /* text-sm */
+            padding: 0.5rem;          /* py-2 px-3 */
+            transition-property: border-color, box-shadow;
+            transition-duration: 0.15s;
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #3b82f6;      /* focus:border-blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);  /* focus:ring-blue-500 */
+            outline: none;
+        }
+
+        .button-group {
+            margin-top: 1rem;      /* mt-4 */
+            display: flex;
+            justify-content: flex-end;  /* justify-end */
+            gap: 0.5rem;          /* space-x-2 */
+        }
+
+        .reset-button, .apply-button {
+            padding: 0.5rem 1rem;      /* py-2 px-4 */
+            border-radius: 0.375rem;  /* rounded-md */
+            font-size: 0.875rem;    /* text-sm */
+            font-medium: 500;      /* font-medium */
+            cursor: pointer;
+            transition-property: background-color, border-color, box-shadow;
+            transition-duration: 0.2s;
+            transition-timing-function: ease;
+            outline: none;
+            border: none;
+        }
+
+        .reset-button {
+            background-color: #fff;
+            color: #374151;          /* text-gray-700 */
+            border: 1px solid #d1d5db;  /* border-gray-300 */
+        }
+
+        .reset-button:hover {
+            background-color: #f9fafb;  /* hover:bg-gray-50 */
+        }
+
+        .reset-button:focus {
+            ring-width: 2px;
+            ring-color: #3b82f6;      /* focus:ring-blue-500 */
+            ring-offset-width: 2px;    /* focus:ring-offset-2 */
+            border-color: transparent;
+        }
+
+        .apply-button {
+            background-color: #2563eb;  /* bg-blue-600 */
+            color: #fff;
+        }
+
+        .apply-button:hover {
+            background-color: #1e40af;  /* hover:bg-blue-700 */
+        }
+
+        .apply-button:focus {
+            ring-width: 2px;
+            ring-color: #3b82f6;      /* focus:ring-blue-500 */
+            ring-offset-width: 2px;    /* focus:ring-offset-2 */
+            border-color: transparent;
+        }
+    </style>
+    <script>
+    const allCategories = [
+        'salary',
+        'investment',
+        'side-hustle',
+        'gift',
+        'food',
+        'transportation',
+        'housing',
+        'utilities',
+        'entertainment',
+        'health',
+        'education',
+        'shopping',
+        'debt',
+        'savings',
+        'other',
+    ];
+
+    function TransactionFilter(props) {
+        const [isOpen, setIsOpen] = React.useState(false);
+        const [filters, setFilters] = React.useState({
+            startDate: '',
+            endDate: '',
+            category: 'all',
+            type: 'all',
+        });
+
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            setFilters(prev => ({
+                ...prev,
+                [name]: value,
+            }));
+        };
+
+        const handleApplyFilters = () => {
+            props.onFilterChange(filters);
+            setIsOpen(false);
+        };
+
+        const handleResetFilters = () => {
+            const resetFilters = {
+                startDate: '',
+                endDate: '',
+                category: 'all',
+                type: 'all',
+            };
+            setFilters(resetFilters);
+            props.onFilterChange(resetFilters);
+            setIsOpen(false);
+        };
+
+        // Main component structure
+        const container = document.createElement('div');
+        container.className = 'relative mb-6';
+
+        const filterButton = document.createElement('button');
+        filterButton.className = 'filter-button';
+        filterButton.onclick = () => setIsOpen(!isOpen);
+
+        const filterIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        filterIcon.className = 'filter-icon';
+        filterIcon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        filterIcon.setAttribute("fill", "none");
+        filterIcon.setAttribute("viewBox", "0 0 24 24");
+        filterIcon.setAttribute("stroke", "currentColor");
+        filterIcon.setAttribute("stroke-width", "2");
+        const filterPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        filterPath.setAttribute("stroke-linecap", "round");
+        filterPath.setAttribute("stroke-linejoin", "round");
+        filterPath.setAttribute("d", "M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z");
+        filterIcon.appendChild(filterPath);
+
+        filterButton.appendChild(filterIcon);
+        filterButton.appendChild(document.createTextNode('Filters'));
+
+        if (filters.startDate || filters.endDate || filters.category !== 'all' || filters.type !== 'all') {
+            const activeIndicator = document.createElement('span');
+            activeIndicator.className = 'active-indicator';
+            activeIndicator.textContent = 'Active';
+            filterButton.appendChild(activeIndicator);
+        }
+
+        container.appendChild(filterButton);
+
+        if (isOpen) {
+            const filterDropdown = document.createElement('div');
+            filterDropdown.className = 'filter-dropdown';
+
+            const filterGrid = document.createElement('div');
+            filterGrid.className = 'filter-grid';
+
+            // Start Date
+            const startDateDiv = document.createElement('div');
+            const startDateLabel = document.createElement('label');
+            startDateLabel.className = 'form-label';
+            startDateLabel.htmlFor = 'startDate';
+            startDateLabel.textContent = 'Start Date';
+            const startDateInput = document.createElement('input');
+            startDateInput.type = 'date';
+            startDateInput.id = 'startDate';
+            startDateInput.name = 'startDate';
+            startDateInput.className = 'form-input';
+            startDateInput.value = filters.startDate;
+            startDateInput.onchange = handleInputChange;
+            startDateDiv.appendChild(startDateLabel);
+            startDateDiv.appendChild(startDateInput);
+            filterGrid.appendChild(startDateDiv);
+
+            // End Date
+            const endDateDiv = document.createElement('div');
+            const endDateLabel = document.createElement('label');
+            endDateLabel.className = 'form-label';
+            endDateLabel.htmlFor = 'endDate';
+            endDateLabel.textContent = 'End Date';
+            const endDateInput = document.createElement('input');
+            endDateInput.type = 'date';
+            endDateInput.id = 'endDate';
+            endDateInput.name = 'endDate';
+            endDateInput.className = 'form-input';
+            endDateInput.value = filters.endDate;
+            endDateInput.onchange = handleInputChange;
+            endDateDiv.appendChild(endDateLabel);
+            endDateDiv.appendChild(endDateInput);
+            filterGrid.appendChild(endDateDiv);
+
+            // Category
+            const categoryDiv = document.createElement('div');
+            const categoryLabel = document.createElement('label');
+            categoryLabel.className = 'form-label';
+            categoryLabel.htmlFor = 'category';
+            categoryLabel.textContent = 'Category';
+            const categorySelect = document.createElement('select');
+            categorySelect.id = 'category';
+            categorySelect.name = 'category';
+            categorySelect.className = 'form-select';
+            categorySelect.value = filters.category;
+            categorySelect.onchange = handleInputChange;
+
+            const allCategoriesOption = document.createElement('option');
+            allCategoriesOption.value = 'all';
+            allCategoriesOption.textContent = 'All Categories';
+            categorySelect.appendChild(allCategoriesOption);
+
+            allCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ');
+                categorySelect.appendChild(option);
+            });
+
+            categoryDiv.appendChild(categoryLabel);
+            categoryDiv.appendChild(categorySelect);
+            filterGrid.appendChild(categoryDiv);
+
+            // Type
+            const typeDiv = document.createElement('div');
+            const typeLabel = document.createElement('label');
+            typeLabel.className = 'form-label';
+            typeLabel.htmlFor = 'type';
+            typeLabel.textContent = 'Type';
+            const typeSelect = document.createElement('select');
+            typeSelect.id = 'type';
+            typeSelect.name = 'type';
+            typeSelect.className = 'form-select';
+            typeSelect.value = filters.type;
+            typeSelect.onchange = handleInputChange;
+
+            const allTypesOption = document.createElement('option');
+            allTypesOption.value = 'all';
+            allTypesOption.textContent = 'All Types';
+            typeSelect.appendChild(allTypesOption);
+
+            const incomeOption = document.createElement('option');
+            incomeOption.value = 'income';
+            incomeOption.textContent = 'Income';
+            typeSelect.appendChild(incomeOption);
+
+            const expenseOption = document.createElement('option');
+            expenseOption.value = 'expense';
+            expenseOption.textContent = 'Expense';
+            typeSelect.appendChild(expenseOption);
+
+            typeDiv.appendChild(typeLabel);
+            typeDiv.appendChild(typeSelect);
+            filterGrid.appendChild(typeDiv);
+
+            const buttonGroup = document.createElement('div');
+            buttonGroup.className = 'button-group';
+
+            const resetButton = document.createElement('button');
+            resetButton.className = 'reset-button';
+            resetButton.textContent = 'Reset';
+            resetButton.onclick = handleResetFilters;
+
+            const applyButton = document.createElement('button');
+            applyButton.className = 'apply-button';
+            applyButton.textContent = 'Apply Filters';
+            applyButton.onclick = handleApplyFilters;
+
+            buttonGroup.appendChild(resetButton);
+            buttonGroup.appendChild(applyButton);
+
+            filterDropdown.appendChild(filterGrid);
+            filterDropdown.appendChild(buttonGroup);
+            container.appendChild(filterDropdown);
+        }
+
+        return container;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterContainer = document.getElementById('filter-container');
+
+        // Example usage:
+        function handleFilterChange(filters) {
+            console.log('Filters applied:', filters);
+            // In a real application, you would fetch data based on these filters
+        }
+
+        const filter = TransactionFilter({ onFilterChange: handleFilterChange });
+        filterContainer.appendChild(filter);
+    });
+    </script>
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="container mx-auto p-4">
+        <div id="filter-container">
+            </div>
+        <div class="mt-8 text-center text-gray-700">
+            <p>Content of the page would be displayed here, after the filter.</p>
+        </div>
+    </div>
+</body>
+</html>

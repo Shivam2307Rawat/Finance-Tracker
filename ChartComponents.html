@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker Charts</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+.container {
+  max-width: 800px; /* mx-auto */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem; /* px-6 */
+  padding-right: 1.5rem;
+  padding-top: 1.5rem;  /*pt-6*/
+  padding-bottom: 1.5rem; /*pb-6*/
+}
+
+.heading {
+  font-size: 1.75rem; /* text-2xl */
+  font-weight: 600;  /* font-semibold */
+  color: #4a5568;    /* text-gray-800 */
+  margin-bottom: 2rem; /* mb-8 */
+  text-align: center;
+}
+
+.chart-container {
+  background-color: #fff;
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);  /* shadow-md */
+  padding: 1.5rem;      /* p-6 */
+}
+
+.chart-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600;  /* font-semibold */
+  color: #4a5568;    /* text-gray-700 */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;        /* gap-6 */
+}
+@media (min-width: 1024px) {
+    .grid {
+        flex-direction: row;
+        grid-template-columns: 1fr 1fr;
+    }
+    .grid > div:nth-child(1),
+    .grid > div:nth-child(2),
+    .grid > div:nth-child(3) {
+        flex: 1;
+    }
+}
+
+.time-series-chart-container {
+  grid-column: span 2;
+}
+    </style>
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-8 text-center">Expense Tracker Charts</h1>
+        <div class="grid">
+            <div class="chart-container time-series-chart-container">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Income vs Expenses Over Time</h2>
+                <canvas id="timeSeriesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Expense Breakdown</h2>
+                <canvas id="expensePieChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Income Sources</h2>
+                <canvas id="incomePieChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Get the canvas elements
+const expensePieChartCtx = document.getElementById('expensePieChart').getContext('2d');
+const incomePieChartCtx = document.getElementById('incomePieChart').getContext('2d');
+const timeSeriesChartCtx = document.getElementById('timeSeriesChart').getContext('2d');
+
+// Sample data (replace with your actual data)
+const expenseData = {
+    labels: ['Food', 'Housing', 'Transportation', 'Entertainment', 'Other'],
+    datasets: [{
+        label: 'Expenses',
+        data: [300, 250, 100, 150, 200],
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+const incomeData = {
+    labels: ['Salary', 'Investments', 'Other Income'],
+    datasets: [{
+        label: 'Income',
+        data: [500, 300, 100],
+        backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(54, 162, 235, 0.6)'
+        ],
+        borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(54, 162, 235, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+const timeSeriesData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [{
+        label: 'Income',
+        data: [800, 1000, 900, 1200, 1100, 1300, 1200, 1400, 1300, 1500, 1400, 1600],
+        borderColor: 'rgba(75, 192, 192, 1)',
+        fill: false,
+        pointRadius: 5,
+        pointHoverRadius: 7
+    }, {
+        label: 'Expenses',
+        data: [600, 700, 500, 800, 600, 900, 800, 1000, 900, 1100, 1000, 1200],
+        borderColor: 'rgba(255, 99, 132, 1)',
+        fill: false,
+        pointRadius: 5,
+        pointHoverRadius: 7
+    }]
+};
+
+// Create the charts
+let expensePieChart, incomePieChart, timeSeriesChart; // Declare chart variables globally
+
+function createCharts() {
+    expensePieChart = new Chart(expensePieChartCtx, {
+        type: 'pie',
+        data: expenseData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Expense Breakdown',
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+
+    incomePieChart = new Chart(incomePieChartCtx, {
+        type: 'pie',
+        data: incomeData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Income Sources',
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+
+    timeSeriesChart = new Chart(timeSeriesChartCtx, {
+        type: 'line',
+        data: timeSeriesData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Month',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Income vs Expenses Over Time',
+                    font: {
+                        size: 16
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            }
+        }
+    });
+}
+//check if the page is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', createCharts);
+} else {
+  createCharts();
+}
+    </script>
+</body>
+</html>

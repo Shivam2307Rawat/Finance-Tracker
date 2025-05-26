@@ -1,0 +1,69 @@
+/* General body styling */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6; /* Tailwind bg-gray-100 */
+  margin: 0; /* Remove default body margin */
+  padding: 0; /* Remove default body padding */
+}
+
+/* Container for the entire content */
+.container {
+  max-width: 800px; /* Tailwind mx-auto */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem; /* Tailwind px-6 */
+  padding-right: 1.5rem;
+  padding-top: 1.5rem;  /* Tailwind pt-6 */
+  padding-bottom: 1.5rem; /* Tailwind pb-6 */
+}
+
+/* Main heading style */
+.heading {
+  font-size: 1.75rem; /* Tailwind text-2xl */
+  font-weight: 600;  /* Tailwind font-semibold */
+  color: #4a5568;    /* Tailwind text-gray-800 */
+  margin-bottom: 2rem; /* Tailwind mb-8 */
+  text-align: center;
+}
+
+/* Styling for individual chart containers */
+.chart-container {
+  background-color: #fff; /* White background */
+  border-radius: 0.5rem; /* Tailwind rounded-lg */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);  /* Tailwind shadow-md */
+  padding: 1.5rem;      /* Tailwind p-6 */
+}
+
+/* Styling for chart titles */
+.chart-title {
+  font-size: 1.25rem; /* Tailwind text-xl */
+  font-weight: 600;  /* Tailwind font-semibold */
+  color: #4a5568;    /* Tailwind text-gray-700 */
+  margin-bottom: 1rem; /* Tailwind mb-4 */
+}
+
+/* Grid layout for chart containers */
+.grid {
+  display: flex;
+  flex-direction: column; /* Stack items vertically by default */
+  gap: 1.5rem;        /* Tailwind gap-6 */
+}
+
+/* Responsive adjustments for the grid on larger screens (e.g., tablets and desktops) */
+@media (min-width: 1024px) { /* Tailwind lg breakpoint */
+    .grid {
+        flex-direction: row; /* Arrange items horizontally */
+        grid-template-columns: 1fr 1fr; /* Create two equal-width columns */
+    }
+    /* Make each chart container take up equal width in the row */
+    .grid > div:nth-child(1),
+    .grid > div:nth-child(2),
+    .grid > div:nth-child(3) {
+        flex: 1;
+    }
+}
+
+/* Specific styling for the time series chart container to span across columns if needed */
+.time-series-chart-container {
+  grid-column: span 2; /* Allows this container to span two columns in a grid layout if the parent is a grid container */
+}
